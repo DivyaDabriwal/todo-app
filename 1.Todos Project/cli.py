@@ -1,67 +1,68 @@
-from functions import get_todos, write_todos
+# from functions import get_todos, write_todos
+import functions
+import time
 
-from time import strftime
-
-print(f"It is {strftime('%b %d, %Y %H:%M:%S')}")
+now = time.strftime("%b %d, %Y %H:%M:%S")
+print("It is", now)
 
 while True:
-    userInput = input('Type add, show, edit, complete or exit: ').strip()
+    user_action = input("Type add, show, edit, complete or exit: ")
+    user_action = user_action.strip()
 
-    if userInput.startswith('add'):
-        todo = userInput[4:]
+    if user_action.startswith("add"):
+        todo = user_action[4:]
 
-        todos = get_todos()
+        todos = functions.get_todos()
 
         todos.append(todo + '\n')
 
-        write_todos(todos)
+        functions.write_todos(todos)
 
-    elif userInput.startswith('edit'):
+    elif user_action.startswith('show'):
+
+        todos = functions.get_todos()
+
+        for index, item in enumerate(todos):
+            item = item.strip('\n')
+            row = f"{index + 1}-{item}"
+            print(row)
+    elif user_action.startswith('edit'):
         try:
-            userInputIndex = int(userInput[5:])
-            newTodo = input('Enter the new todo: ')
+            number = int(user_action[5:])
+            print(number)
 
-            todos = get_todos()
+            number = number - 1
 
-            if 1 <= userInputIndex <= len(todos):
+            todos = functions.get_todos()
 
-                todos[userInputIndex - 1] = newTodo + '\n'
-                write_todos(todos)
-            else:
-                print('Out of range')
+            new_todo = input("Enter new todo: ")
+            todos[number] = new_todo + '\n'
 
+            functions.write_todos(todos)
         except ValueError:
-            print('Your command is not valid.')
+            print("Your command is not valid.")
             continue
 
-    elif userInput.startswith('show'):
-
-        todos = get_todos('todos.txt')
-
-        for index, singleTodo in enumerate(todos):
-            formattedTodo = singleTodo.title().strip('\n')
-            print(f'{index + 1}. {formattedTodo}')
-
-    elif userInput.startswith('complete'):
-
+    elif user_action.startswith('complete'):
         try:
-            userInputIndex = int(userInput[9:])
+            number = int(user_action[9:])
 
-            todos = get_todos()
+            todos = functions.get_todos()
+            index = number - 1
+            todo_to_remove = todos[index].strip('\n')
+            todos.pop(index)
 
-            if 1 <= userInputIndex <= len(todos):
+            functions.write_todos(todos)
 
-                completedTodo = todos.pop(userInputIndex - 1).strip('\n')
-                print(f'Todo {completedTodo} was removed from the list.')
-                write_todos(todos)
-            else:
-                print('Out of range')
-
+            message = f"Todo {todo_to_remove} was removed from the list."
+            print(message)
         except IndexError:
-            print('Invalid input.')
+            print("There is no item with that number.")
             continue
 
-    elif userInput.startswith('exit'):
+    elif user_action.startswith('exit'):
         break
     else:
-        print('Invalid command.')
+        print("Command is not valid.")
+
+print("Bye!")
